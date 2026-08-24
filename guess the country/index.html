@@ -1,1 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Country - Get Out Now!</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; text-align: center; }
+        .quiz-container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .quiz-img { width: 100%; height: 250px; object-fit: cover; border-radius: 8px; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        button { padding: 12px; font-size: 16px; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; background: #005f73; color: white; transition: 0.2s; }
+        button:hover { background: #0a9396; }
+        #result { margin-top: 20px; font-weight: bold; font-size: 18px; }
+        #next-btn { display: none; background: #ee9b00; margin-top: 15px; width: 100%; }
+    </style>
+</head>
+<body>
 
+<div class="quiz-container">
+    <h2 style="color: #005f73;">Guess the Country!</h2>
+    <p id="score">Score: 0</p>
+    <img id="country-img" class="quiz-img" src="" alt="Destination clue">
+    <div id="options" class="btn-grid"></div>
+    <div id="result"></div>
+    <button id="next-btn" onclick="nextQuestion()">Next Destination</button>
+</div>
+
+<script>
+const quizData = [
+    {
+        image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?q=80&w=800",
+        options: ["Greece", "Italy", "Spain", "Turkey"],
+        answer: "Greece"
+    },
+    {
+        image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800",
+        options: ["China", "Japan", "South Korea", "Thailand"],
+        answer: "Japan"
+    },
+    {
+        image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=800",
+        options: ["Kenya", "South Africa", "Tanzania", "Morocco"],
+        answer: "Tanzania"
+    }
+];
+
+let currentIndex = 0;
+let score = 0;
+
+function loadQuestion() {
+    document.getElementById("result").innerText = "";
+    document.getElementById("next-btn").style.display = "none";
+    const currentQuiz = quizData[currentIndex];
+    document.getElementById("country-img").src = currentQuiz.image;
+    
+    const optionsContainer = document.getElementById("options");
+    optionsContainer.innerHTML = "";
+    
+    currentQuiz.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.onclick = () => checkAnswer(option);
+        optionsContainer.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected) {
+    const correct = quizData[currentIndex].answer;
+    const resultDiv = document.getElementById("result");
+    const buttons = document.getElementById("options").getElementsByTagName("button");
+
+    for (let btn of buttons) { btn.disabled = true; }
+
+    if (selected === correct) {
+        score += 100;
+        resultDiv.innerText = "Correct! You won 100 points!";
+        resultDiv.style.color = "green";
+    } else {
+        resultDiv.innerText = `Incorrect! The correct answer was ${correct}.`;
+        resultDiv.style.color = "red";
+    }
+
+    document.getElementById("score").innerText = `Score: ${score}`;
+    document.getElementById("next-btn").style.display = "block";
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < quizData.length) {
+        loadQuestion();
+    } else {
+        showFinalResult();
+    }
+}
+
+function showFinalResult() {
+    const container = document.querySelector(".quiz-container");
+    container.innerHTML = `
+        <h2 style="color: #005f73;">Challenge Complete!</h2>
+        <p style="font-size: 20px;">Final Score: <strong>${score} / ${quizData.length * 100}</strong></p>
+        <p style="color: #ee9b00; font-weight: bold;">Show this screen to the event booth to claim your vendor prize discount voucher!</p>
+    `;
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
